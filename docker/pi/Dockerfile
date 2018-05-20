@@ -38,7 +38,7 @@ RUN pip3 install absl-py==0.1.10 \
                 Markdown==2.6.11 \
                 mccabe==0.6.1 \
                 numpy==1.14.0 \
-                opencv-python==3.4.0.12 \
+                opencv-python \
                 protobuf==3.5.1 \
                 pylint==1.8.2 \
                 scikit-learn==0.19.1 \
