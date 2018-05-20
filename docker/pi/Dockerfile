@@ -3,10 +3,6 @@ FROM elswork/rpi-tensorflow:1.7.0
 RUN apt-get update -y
 
 RUN apt install -y curl \
-                zip \
-                unzip \
-                wget \
-		cmake \
                 libsm6 \ 
                 libxext6 \
                 libxrender1 \
@@ -24,36 +20,20 @@ RUN python -m pip install -U pip
 
 RUN pip3 install -U pip
 
-RUN wget -O opencv.zip https://github.com/Itseez/opencv/archive/3.4.1.zip
+# OpenCV
+ENV OPENCV_VERSION="3.4.1"
+ENV OPENCV_DIR="/opt/opencv/"
 
-RUN unzip opencv.zip
+ADD https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz ${OPENCV_DIR}
 
-RUN wget -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/3.4.1.zip
-
-RUN unzip opencv_contrib.zip
-
-WORKDIR /opencv-3.4.1
-
-RUN pwd
-
-RUN ls -la
-
-RUN mkdir build
-
-WORKDIR /opencv-3.4.1/build
-
-RUN  cmake -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=/usr/local \ 
-    -D INSTALL_C_EXAMPLES=ON \ 
-    -D INSTALL_PYTHON_EXAMPLES=ON \ 
-    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \ 
-    -D BUILD_EXAMPLES=OFF .. && \
-
-RUN make -j4
-
-RUN sudo make install    
-
-RUN sudo ldconfig
+RUN cd ${OPENCV_DIR} && \
+    tar -xzf ${OPENCV_VERSION}.tar.gz && \
+    rm ${OPENCV_VERSION}.tar.gz && \
+    mkdir ${OPENCV_DIR}opencv-${OPENCV_VERSION}/build && \
+    cd ${OPENCV_DIR}opencv-${OPENCV_VERSION}/build && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local .. && make -j4 && make install && \
+    mv /usr/local/lib/python3.4/dist-packages/cv2.cpython-34m.so /usr/local/lib/python3.4/dist-packages/cv2.so && \
+    rm -rf ${OPENCV_DIR}
 
 WORKDIR /
 
