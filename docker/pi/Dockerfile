@@ -2,30 +2,32 @@ FROM elswork/rpi-tensorflow:1.7.0
 
 RUN apt-get update -y
 
-RUN apt install build-essential cmake pkg-config unzip wget
-
-RUN apt install -y curl \
-		libjpeg-dev \
-   		libtiff5-dev \
-    		libjasper-dev \
-    		libpng12-dev \
-    		libavcodec-dev \
-    		libavformat-dev \
-    		libswscale-dev \
-    		libv4l-dev \
-    		libxvidcore-dev \
-    		libx264-dev \
-    		libgtk2.0-dev \
-    		libatlas-base-dev \
-    		gfortran \
-    		python2.7-dev \
-   		python3-dev \
-    		python-pip \
-    		python-numpy
-                libsm6 \
-                libxext6 \
-                libxrender1 \
-                libfontconfig1
+RUN apt install -y  build-essential \
+                    cmake \
+                    pkg-config \
+                    unzip wget \
+                    curl \
+                    libjpeg-dev \
+                    libtiff5-dev \
+                    libjasper-dev \
+                    libpng12-dev \
+                    libavcodec-dev \
+                    libavformat-dev \
+                    libswscale-dev \
+                    libv4l-dev \
+                    libxvidcore-dev \
+                    libx264-dev \
+                    libgtk2.0-dev \
+                    libatlas-base-dev \
+                    gfortran \
+                    python2.7-dev \
+                    python3-dev \
+                    python-pip \
+                    python-numpy \
+                    libsm6 \
+                    libxext6 \
+                    libxrender1 \
+                    libfontconfig1
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 
@@ -39,7 +41,7 @@ RUN python -m pip install -U pip
 
 RUN pip3 install -U pip
 
-RUN pip3 install absl-py==0.1.10 \
+RUN pip install absl-py==0.1.10 \
                 astroid==1.6.1 \
                 bleach==1.5.0 \
                 html5lib==0.9999999 \
