@@ -2,8 +2,27 @@ FROM elswork/rpi-tensorflow:1.7.0
 
 RUN apt-get update -y
 
+RUN apt install build-essential cmake pkg-config unzip wget
+
 RUN apt install -y curl \
-                libsm6 \ 
+		libjpeg-dev \
+   		libtiff5-dev \
+    		libjasper-dev \
+    		libpng12-dev \
+    		libavcodec-dev \
+    		libavformat-dev \
+    		libswscale-dev \
+    		libv4l-dev \
+    		libxvidcore-dev \
+    		libx264-dev \
+    		libgtk2.0-dev \
+    		libatlas-base-dev \
+    		gfortran \
+    		python2.7-dev \
+   		python3-dev \
+    		python-pip \
+    		python-numpy
+                libsm6 \
                 libxext6 \
                 libxrender1 \
                 libfontconfig1
@@ -19,31 +38,6 @@ RUN pip install --upgrade pip
 RUN python -m pip install -U pip
 
 RUN pip3 install -U pip
-
-# OpenCV
-ENV OPENCV_VERSION="3.4.1"
-ENV OPENCV_DIR="/opt/opencv/"
-
-ADD https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz ${OPENCV_DIR}
-
-RUN cd ${OPENCV_DIR} && \
-    tar -xzf ${OPENCV_VERSION}.tar.gz && \
-    rm ${OPENCV_VERSION}.tar.gz && \
-    mkdir ${OPENCV_DIR}opencv-${OPENCV_VERSION}/build && \
-    cd ${OPENCV_DIR}opencv-${OPENCV_VERSION}/build && \
-    cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local .. && make -j4 && make install && \
-    mv /usr/local/lib/python3.4/dist-packages/cv2.cpython-34m.so /usr/local/lib/python3.4/dist-packages/cv2.so && \
-    rm -rf ${OPENCV_DIR}
-
-WORKDIR /
-
-RUN mkdir /facematch
-
-RUN chown -R root:root /facematch
-
-RUN chmod 755 /facematch
-
-WORKDIR /facematch
 
 RUN pip3 install absl-py==0.1.10 \
                 astroid==1.6.1 \
@@ -64,5 +58,49 @@ RUN pip3 install absl-py==0.1.10 \
                 tensorflow==1.5.0 \
                 tensorflow-tensorboard==1.5.1 \
                 Werkzeug==0.14.1 \
-                wrapt==1.10.11 
+                wrapt==1.10.11
 
+
+# OpenCV
+ENV OPENCV_VERSION 3.4.1
+
+# download latest source & contrib
+RUN cd /tmp && \
+    wget -O opencv.zip https://github.com/opencv/opencv/archive/$OPENCV_VERSION.zip && \
+    unzip opencv.zip
+
+RUN cd /tmp && \
+wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/$OPENCV_VERSION.zip && \
+    unzip opencv_contrib.zip
+
+# build opencv
+RUN cd /tmp/opencv-$OPENCV_VERSION && \
+    mkdir build && \
+    cd build && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_C_EXAMPLES=ON \
+    -D BUILD_PYTHON_SUPPORT=ON \
+    -D BUILD_NEW_PYTHON_SUPPORT=ON \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+        -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-$OPENCV_VERSION/modules \
+    -D BUILD_EXAMPLES=ON .. && \
+    make -j4 && \
+    make && \
+    make install && \
+    make clean
+
+# cleanup source
+RUN cd /tmp && rm -rf opencv-$OPENCV_VERSION
+
+
+# facefatch
+WORKDIR /
+
+RUN mkdir /facematch
+
+RUN chown -R root:root /facematch
+
+RUN chmod 755 /facematch
+
+WORKDIR /facematch
