@@ -5,7 +5,8 @@ RUN apt-get update -y
 RUN apt install -y curl \
                 zip \
                 unzip \
-                ldconfig \
+                wget \
+		cmake \
                 libsm6 \ 
                 libxext6 \
                 libxrender1 \
@@ -31,17 +32,22 @@ RUN wget -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/
 
 RUN unzip opencv_contrib.zip
 
-RUN cd ~/opencv-3.1.0/
+WORKDIR /opencv-3.4.1
+
+RUN pwd
+
+RUN ls -la
 
 RUN mkdir build
 
-RUN cd cd build
+WORKDIR /opencv-3.4.1/build
 
-RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D INSTALL_PYTHON_EXAMPLES=ON \
-    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-3.1.0/modules \
-    -D BUILD_EXAMPLES=ON ..
+RUN  cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \ 
+    -D INSTALL_C_EXAMPLES=ON \ 
+    -D INSTALL_PYTHON_EXAMPLES=ON \ 
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \ 
+    -D BUILD_EXAMPLES=OFF .. && \
 
 RUN make -j4
 
@@ -49,7 +55,7 @@ RUN sudo make install
 
 RUN sudo ldconfig
 
-RUN cd /
+WORKDIR /
 
 RUN mkdir /facematch
 
