@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  facematch-dev:
+    build:
+      context: ..
+      dockerfile: ./docker/dev/Dockerfile
+    volumes:
+      - ..:/facematch
+    command: python3 face_match_demo.py --img1=/facematch/images/daniel-radcliffe_2.jpg --img2=/facematch/images/daniel-radcliffe_4.jpg
+  facematch-pi:
+    build:
+      context: ..
+      dockerfile: ./docker/pi/Dockerfile
+    volumes:
+      - ..:/facematch  
+    command: python3 face_match_demo.py --img1=/facematch/images/daniel-radcliffe_2.jpg --img2=/facematch/images/daniel-radcliffe_4.jpg
+    
